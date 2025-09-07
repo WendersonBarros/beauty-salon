@@ -1,6 +1,7 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-import { User } from "./entity/User"
+import { Category } from "./entity/Category"
+import { Product } from "./entity/Product"
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -13,7 +14,7 @@ export const AppDataSource = new DataSource({
     database: process.env.POSTGRES_DB,
     synchronize: true,
     logging: false,
-    entities: [User],
+    entities: [Category, Product],
     migrations: [],
     subscribers: [],
-})
+});
