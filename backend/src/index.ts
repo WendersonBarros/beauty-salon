@@ -1,21 +1,15 @@
-import { request } from "http";
 import { AppDataSource } from "./data-source"
 import Fastify from "fastify"
+import CategoryRoutes from "./routes/CategoryRoutes";
 
 AppDataSource.initialize().then(async () => {
-  console.log("Here you can setup and run express / fastify / any other framework.")
+  const app = Fastify({ logger: true });
 
-  const fastify = Fastify({
-    logger: true
-  });
+  app.register(CategoryRoutes, { prefix: "/categories" });
 
-  fastify.get('/', (request, reply) => {
-    reply.send({ hello: "world" });
-  });
-
-  fastify.listen({port: 3000}, (err, address) => {
-    if(err) {
-      fastify.log.error(err);
+  app.listen({ port: 3000 }, (err, address) => {
+    if (err) {
+      app.log.error(err);
       process.exit(1);
     }
 
