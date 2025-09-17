@@ -22,4 +22,9 @@ export class CategoryController {
       });
     }
   }
+
+  static async getAll(_request: FastifyRequest, reply: FastifyReply) {
+    const categories = await categoryService.getCategories();
+    return reply.send(categories);
+  }
 };
