@@ -18,4 +18,8 @@ export class CategoryService {
 
     return await this.categoryRepo.save(category);
   }
+
+  async getCategories() {
+    return this.categoryRepo.find();
+  }
 };
