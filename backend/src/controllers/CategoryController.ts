@@ -24,7 +24,13 @@ export class CategoryController {
   }
 
   static async getAll(_request: FastifyRequest, reply: FastifyReply) {
-    const categories = await categoryService.getCategories();
-    return reply.send(categories);
+    try {
+      const categories = await categoryService.getCategories();
+      return reply.send(categories);
+    } catch (err: any) {
+      return reply.status(500).send({
+        error: err.message
+      });
+    }
   }
 };
