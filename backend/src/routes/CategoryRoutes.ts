@@ -6,4 +6,5 @@ export default async function CategoryRoutes(fastify: FastifyInstance) {
   fastify.get("/", CategoryController.getAll);
   fastify.get("/:id", CategoryController.getOne);
   fastify.patch("/:id", CategoryController.update);
+  fastify.delete("/:id", CategoryController.delete);
 };
