@@ -21,11 +21,11 @@ export class CategoryService {
   }
 
   async getCategories() {
-    return this.categoryRepo.find();
+    return await this.categoryRepo.find();
   }
 
   async getCategoryById(id: number) {
-    const category = await this.categoryRepo.findOneById(id);
+    const category = await this.categoryRepo.findOne({ where: { id } });
 
     if (!category) {
       throw new NotFoundError(`Category with id ${id} not found`);
