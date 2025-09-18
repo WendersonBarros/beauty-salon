@@ -6,18 +6,22 @@ const categoryService = new CategoryService();
 
 export class CategoryController {
   static async create(request: FastifyRequest<{ Body: { name: string } }>, reply: FastifyReply) {
-    const { name } = request.body;
-
-    if (!name?.trim().length) {
-      return reply.status(400).send({
-        error: "Category name is required"
-      });
-    }
-
     try {
+      const { name } = request.body;
+
+      if (!name?.trim().length) {
+        throw new BadRequestError("Category name is required");
+      }
+
       const category = await categoryService.createCategory(name);
       return reply.status(201).send(category);
     } catch (err: any) {
+      if (err instanceof BadRequestError) {
+        return reply.status(400).send({
+          error: err.message
+        });
+      }
+
       if (err instanceof ConflictError) {
         return reply.status(409).send({
           error: err.message
@@ -33,7 +37,7 @@ export class CategoryController {
   static async getAll(_request: FastifyRequest, reply: FastifyReply) {
     try {
       const categories = await categoryService.getCategories();
-      return reply.send(categories);
+      return reply.status(200).send(categories);
     } catch (err: any) {
       return reply.status(500).send({
         error: "Internal server error"
@@ -50,7 +54,7 @@ export class CategoryController {
       }
 
       const category = await categoryService.getCategoryById(id);
-      return reply.send(category);
+      return reply.status(200).send(category);
     } catch (err: any) {
       if (err instanceof NotFoundError) {
         return reply.status(404).send({
