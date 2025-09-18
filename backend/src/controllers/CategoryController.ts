@@ -116,4 +116,35 @@ export class CategoryController {
       });
     }
   }
+
+  static async delete(request: FastifyRequest<{ Params: { id: number } }>, reply: FastifyReply) {
+    try {
+      const id = request.params.id;
+
+      if (!Number.isInteger(Number(id))) {
+        throw new BadRequestError("Invalid id, must be a number");
+      }
+
+      const deletedCategory = await categoryService.deleteCategory(id);
+      return reply.status(200).send({
+        message: `Category '${deletedCategory.name}' deleted successfully`
+      });
+    } catch (err: any) {
+      if (err instanceof BadRequestError) {
+        return reply.status(400).send({
+          error: err.message
+        });
+      }
+
+      if (err instanceof NotFoundError) {
+        return reply.status(404).send({
+          error: err.message
+        });
+      }
+
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  }
 };
