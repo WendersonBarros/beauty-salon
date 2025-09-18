@@ -49,4 +49,14 @@ export class CategoryService {
     category.name = name;
     return await this.categoryRepo.save(category);
   }
+
+  async deleteCategory(id: number) {
+    const category = await this.categoryRepo.findOne({ where: { id } });
+
+    if (!category) {
+      throw new NotFoundError(`Category with id ${id} not found`);
+    }
+
+    return await this.categoryRepo.remove(category);
+  }
 };
