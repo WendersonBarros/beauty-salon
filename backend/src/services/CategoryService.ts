@@ -1,5 +1,6 @@
 import { AppDataSource } from "../data-source";
 import { Category } from "../entity/Category";
+import { NotFoundError } from "../utils/errors";
 
 export class CategoryService {
   private categoryRepo = AppDataSource.getRepository(Category);
@@ -21,5 +22,15 @@ export class CategoryService {
 
   async getCategories() {
     return this.categoryRepo.find();
+  }
+
+  async getCategoryById(id: number) {
+    const category = await this.categoryRepo.findOneById(id);
+
+    if (!category) {
+      throw new NotFoundError(`Category with id ${id} not found`);
+    }
+
+    return category;
   }
 };
