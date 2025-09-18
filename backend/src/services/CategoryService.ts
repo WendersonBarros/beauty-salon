@@ -1,6 +1,6 @@
 import { AppDataSource } from "../data-source";
 import { Category } from "../entity/Category";
-import { NotFoundError } from "../utils/errors";
+import { ConflictError, NotFoundError } from "../utils/errors";
 
 export class CategoryService {
   private categoryRepo = AppDataSource.getRepository(Category);
@@ -11,7 +11,7 @@ export class CategoryService {
     });
 
     if (existing) {
-      throw new Error("Category with the same name already exists");
+      throw new ConflictError("Category with the same name already exists");
     }
 
     const category = new Category();

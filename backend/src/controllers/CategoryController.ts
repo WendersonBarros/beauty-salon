@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { CategoryService } from "../services/CategoryService";
-import { BadRequestError, NotFoundError } from "../utils/errors";
+import { BadRequestError, ConflictError, NotFoundError } from "../utils/errors";
 
 const categoryService = new CategoryService();
 
@@ -18,9 +18,15 @@ export class CategoryController {
       const category = await categoryService.createCategory(name);
       return reply.status(201).send(category);
     } catch (err: any) {
-      return reply.status(409).send({
-        error: err.message
-      });
+      if (err instanceof ConflictError) {
+        return reply.status(409).send({
+          error: err.message
+        });
+      }
+
+      return reply.status(500).send({
+        error: "Internal server error"
+      })
     }
   }
 
@@ -30,7 +36,7 @@ export class CategoryController {
       return reply.send(categories);
     } catch (err: any) {
       return reply.status(500).send({
-        error: err.message
+        error: "Internal server error"
       });
     }
   }
@@ -38,7 +44,7 @@ export class CategoryController {
   static async getOne(request: FastifyRequest<{ Params: { id: number } }>, reply: FastifyReply) {
     try {
       const id = request.params.id;
-      
+
       if (!Number.isInteger(Number(id))) {
         throw new BadRequestError("Invalid id, must be a number");
       }
@@ -47,13 +53,13 @@ export class CategoryController {
       return reply.send(category);
     } catch (err: any) {
       if (err instanceof NotFoundError) {
-        return reply.status(404).send({ 
-          error: err.message 
+        return reply.status(404).send({
+          error: err.message
         });
       }
 
       if (err instanceof BadRequestError) {
-        return reply.status(400).send({ 
+        return reply.status(400).send({
           error: err.message
         });
       }
