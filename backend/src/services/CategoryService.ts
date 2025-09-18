@@ -33,4 +33,20 @@ export class CategoryService {
 
     return category;
   }
+
+  async updateCategory(id: number, name: string) {
+    const category = await this.categoryRepo.findOne({ where: { id } });
+
+    if (!category) {
+      throw new NotFoundError(`Category with id ${id} not found`);
+    }
+
+    const existing = await this.categoryRepo.findOne({ where: { name } });
+    if (existing && existing.id !== Number(id)) {
+      throw new ConflictError("Category with the same name already exists");
+    }
+
+    category.name = name;
+    return await this.categoryRepo.save(category);
+  }
 };
