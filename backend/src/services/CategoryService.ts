@@ -1,9 +1,9 @@
-import { AppDataSource } from "../data-source";
+import { Repository } from "typeorm";
 import { Category } from "../entity/Category";
 import { ConflictError, NotFoundError } from "../utils/errors";
 
 export class CategoryService {
-  private categoryRepo = AppDataSource.getRepository(Category);
+  constructor(private categoryRepo: Repository<Category>) {}
 
   async createCategory(name: string) {
     const existing = await this.categoryRepo.findOne({
