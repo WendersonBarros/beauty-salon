@@ -1,8 +1,11 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { CategoryService } from "../services/CategoryService";
 import { BadRequestError, ConflictError, NotFoundError } from "../utils/errors";
+import { AppDataSource } from "../data-source";
+import { Category } from "../entity/Category";
 
-const categoryService = new CategoryService();
+const categoryRepo = AppDataSource.getRepository(Category);
+const categoryService = new CategoryService(categoryRepo);
 
 export class CategoryController {
   static async create(request: FastifyRequest<{ Body: { name: string } }>, reply: FastifyReply) {
