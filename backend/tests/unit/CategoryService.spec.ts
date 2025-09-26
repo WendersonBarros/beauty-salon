@@ -2,7 +2,7 @@ import "reflect-metadata"
 import { CategoryService } from "../../src/services/CategoryService";
 import { ConflictError } from "../../src/utils/errors";
 
-describe("Category Service", () => {
+describe("Category.createCategory", () => {
   let mockRepo: {
     findOne: jest.Mock;
     save: jest.Mock;
@@ -65,6 +65,34 @@ describe("Category Service", () => {
         categoryService.createCategory("Category with a repeated name")
       ).rejects.toThrow(ConflictError);
       expect(mockRepo.save).toHaveBeenCalledTimes(1); // Category1
+    }
+  );
+});
+
+describe("Category.getCategories", () => {
+  let mockRepo: {
+    find: jest.Mock;
+  };
+
+  let categoryService: CategoryService;
+
+  beforeEach(() => {
+    mockRepo = {
+      find: jest.fn()
+    };
+
+    categoryService = new CategoryService(mockRepo as any);
+  });
+
+  test(
+    "It should return an empty array when there are no categories",
+    async () => {
+      mockRepo.find.mockResolvedValue([]);
+
+      const result = await categoryService.getCategories();
+
+      expect(mockRepo.find).toHaveBeenCalled();
+      expect(result).toStrictEqual([]);
     }
   );
 });
