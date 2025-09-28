@@ -17,6 +17,7 @@ describe("Category.createCategory", () => {
     };
 
     categoryService = new CategoryService(mockRepo as any);
+    jest.clearAllMocks();
   });
 
   test(
@@ -82,6 +83,7 @@ describe("Category.getCategories", () => {
     };
 
     categoryService = new CategoryService(mockRepo as any);
+    jest.clearAllMocks();
   });
 
   test(
@@ -95,4 +97,24 @@ describe("Category.getCategories", () => {
       expect(result).toStrictEqual([]);
     }
   );
+
+  test(
+    "It should return all categories as an array",
+    async () => {
+      const categories = [
+        { id: 1, name: "category 1" },
+        { id: 2, name: "category 2" },
+        { id: 3, name: "category 3" },
+        { id: 4, name: "category 4" }
+      ];
+
+      mockRepo.find.mockResolvedValue(categories);
+
+      const result = await categoryService.getCategories();
+
+      expect(mockRepo.find).toHaveBeenCalled();
+      expect(result).toStrictEqual(categories);
+    }
+  );
 });
+
