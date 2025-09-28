@@ -23,47 +23,40 @@ describe("Category.createCategory", () => {
   test(
     "It should create a new category if it does not exist",
     async () => {
+      const category = { id: 1, name: "Category test 1" };
       mockRepo.findOne.mockResolvedValue(null);
-      mockRepo.save.mockResolvedValue({ id: 1, name: "Category test 1" });
+      mockRepo.save.mockResolvedValue(category);
 
-      const result = await categoryService.createCategory("Category test 1");
+      const result = await categoryService.createCategory(category.name);
 
       expect(mockRepo.findOne)
-        .toHaveBeenCalledWith({ where: { name: "Category test 1" } });
+        .toHaveBeenCalledWith({ where: { name: category.name } });
       expect(mockRepo.save).toHaveBeenCalled();
-      expect(result).toEqual({ id: 1, name: "Category test 1" });
+      expect(result).toStrictEqual(category);
     }
   );
 
   test(
     "It should not be possible to create a category with a repeated name",
     async () => {
+      const repeatedCategory = { id: 1, name: "Category with a repeated name" };
       mockRepo.findOne.mockResolvedValue(null);
-      mockRepo.save.mockResolvedValue({
-        id: 2,
-        name: "Category with a repeated name"
-      });
+      mockRepo.save.mockResolvedValue(repeatedCategory);
 
       const category1 = await categoryService.createCategory(
-        "Category with a repeated name"
+        repeatedCategory.name
       );
 
       expect(mockRepo.findOne).toHaveBeenCalledWith({
-        where: { name: "Category with a repeated name" }
+        where: { name: repeatedCategory.name }
       });
       expect(mockRepo.save).toHaveBeenCalled();
-      expect(category1).toEqual({
-        id: 2,
-        name: "Category with a repeated name"
-      });
+      expect(category1).toStrictEqual(repeatedCategory);
 
-      mockRepo.findOne.mockResolvedValue({
-        id: 2,
-        name: "Category with a repeated name"
-      });
+      mockRepo.findOne.mockResolvedValue(repeatedCategory);
 
       await expect(
-        categoryService.createCategory("Category with a repeated name")
+        categoryService.createCategory(repeatedCategory.name)
       ).rejects.toThrow(ConflictError);
       expect(mockRepo.save).toHaveBeenCalledTimes(1); // Category1
     }
