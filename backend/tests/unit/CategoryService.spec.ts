@@ -1,6 +1,6 @@
 import "reflect-metadata"
 import { CategoryService } from "../../src/services/CategoryService";
-import { ConflictError } from "../../src/utils/errors";
+import { ConflictError, NotFoundError } from "../../src/utils/errors";
 
 describe("Category.createCategory", () => {
   let mockRepo: {
@@ -118,3 +118,30 @@ describe("Category.getCategories", () => {
   );
 });
 
+describe("Category.getCategoryById", () => {
+  let mockRepo: {
+    findOne: jest.Mock;
+  };
+
+  let categoryService: CategoryService;
+
+  beforeEach(() => {
+    mockRepo = {
+      findOne: jest.fn()
+    };
+
+    categoryService = new CategoryService(mockRepo as any);
+    jest.clearAllMocks();
+  });
+
+  test(
+    "It should return an error when the id is not found",
+    async () => {
+      mockRepo.findOne.mockResolvedValue(null);
+
+      await expect(categoryService.getCategoryById(1))
+        .rejects.toThrow(NotFoundError);
+      expect(mockRepo.findOne).toHaveBeenCalled();
+    }
+  );
+});
