@@ -144,4 +144,17 @@ describe("Category.getCategoryById", () => {
       expect(mockRepo.findOne).toHaveBeenCalled();
     }
   );
+
+  test(
+    "It should return the the category with the given ID",
+    async () => {
+      const category = { id: 1, name: "Category 1" };
+      mockRepo.findOne.mockResolvedValue(category);
+
+      const result = await categoryService.getCategoryById(1);
+
+      expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(result).toStrictEqual(category);
+    }
+  );
 });
