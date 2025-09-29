@@ -225,3 +225,32 @@ describe("Category.updateCategory", () => {
     }
   );
 });
+
+describe("Category.deleteCategory", () => {
+  let mockRepo: {
+    findOne: jest.Mock;
+    remove: jest.Mock;
+  };
+
+  let categoryService: CategoryService;
+
+  beforeAll(() => {
+    mockRepo = {
+      findOne: jest.fn(),
+      remove: jest.fn()
+    };
+
+    categoryService = new CategoryService(mockRepo as any);
+  });
+
+  test(
+    "It should return an error when the id is not found",
+    async () => {
+      mockRepo.findOne.mockResolvedValue(null);
+
+      await expect(categoryService.deleteCategory(1))
+        .rejects.toThrow(NotFoundError);
+      expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+    }
+  );
+});
