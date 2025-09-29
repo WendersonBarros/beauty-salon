@@ -180,4 +180,19 @@ describe("Category.updateCategory", () => {
       expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
     }
   );
+
+  test(
+    "It should return an error when trying to update a category with an existing name",
+    async () => {
+      const existingCategory = { id: 1, name: "Existing category" }
+      mockRepo.findOne.mockResolvedValue(existingCategory);
+
+      await expect(categoryService.updateCategory(2, existingCategory.name))
+        .rejects.toThrow(ConflictError);
+      expect(mockRepo.findOne).toHaveBeenNthCalledWith(1, { where: { id: 2 } });
+      expect(mockRepo.findOne).toHaveBeenNthCalledWith(2, {
+        where: { name: existingCategory.name }
+      });
+    }
+  );
 });
