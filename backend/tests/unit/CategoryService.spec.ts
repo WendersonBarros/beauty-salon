@@ -195,4 +195,33 @@ describe("Category.updateCategory", () => {
       });
     }
   );
+
+  test(
+    "It should update the category if no error was thrown",
+    async () => {
+      const id = 1;
+      const categoryToUpdate = { id, name: "Category to update" };
+      mockRepo.findOne
+        .mockResolvedValueOnce(categoryToUpdate)
+        .mockResolvedValueOnce(null);
+
+      categoryToUpdate.name = "Updated category";
+
+      mockRepo.save.mockResolvedValue(categoryToUpdate);
+
+      const result = await categoryService.updateCategory(id, categoryToUpdate.name);
+
+      expect(mockRepo.findOne).toHaveBeenNthCalledWith(1, {
+        where: { id }
+      });
+      expect(mockRepo.findOne).toHaveBeenNthCalledWith(2, {
+        where: { name: categoryToUpdate.name }
+      });
+      expect(mockRepo.save).toHaveBeenCalledWith(categoryToUpdate);
+      expect(result).toStrictEqual({
+        id,
+        name: "Updated category"
+      });
+    }
+  );
 });
