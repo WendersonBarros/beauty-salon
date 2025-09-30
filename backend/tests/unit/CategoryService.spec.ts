@@ -253,4 +253,22 @@ describe("Category.deleteCategory", () => {
       expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
     }
   );
+
+  test(
+    "It should delete the category if it exists",
+    async () => {
+      const categoryToDelete = { id: 1, name: "Category to delete" };
+      const deletedCategoryRes = { id: undefined, name: categoryToDelete.name };
+      mockRepo.findOne.mockResolvedValue(categoryToDelete);
+      mockRepo.remove.mockResolvedValue(deletedCategoryRes);
+
+      const result = await categoryService.deleteCategory(categoryToDelete.id);
+
+      expect(mockRepo.findOne).toHaveBeenCalledWith({
+        where: { id: categoryToDelete.id }
+      });
+      expect(mockRepo.remove).toHaveBeenCalledWith(categoryToDelete);
+      expect(result).toStrictEqual(deletedCategoryRes);
+    }
+  );
 });
