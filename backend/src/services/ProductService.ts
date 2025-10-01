@@ -37,6 +37,9 @@ export class ProductService {
   };
 
   async getProducts() {
-    return this.productRepo.find();
-  }
+    return this.productRepo.find({
+      relations: ['category'],
+      loadRelationIds: true
+    });
+  };
 };
