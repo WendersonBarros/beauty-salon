@@ -1,12 +1,14 @@
 import { AppDataSource } from "./data-source"
 import Fastify from "fastify"
 import CategoryRoutes from "./routes/CategoryRoutes";
+import ProductRoutes from "./routes/ProductRoutes";
 import { BadRequestError, ConflictError, NotFoundError } from "./utils/errors";
 
 AppDataSource.initialize().then(async () => {
   const app = Fastify({ logger: true });
 
   app.register(CategoryRoutes, { prefix: "/categories" });
+  app.register(ProductRoutes, { prefix: "/products" });
 
   app.setErrorHandler((error, request, reply) => {
     if (error instanceof BadRequestError) {
