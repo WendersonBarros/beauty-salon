@@ -35,4 +35,8 @@ export class ProductService {
 
     return this.productRepo.save(product);
   };
+
+  async getProducts() {
+    return this.productRepo.find();
+  }
 };
