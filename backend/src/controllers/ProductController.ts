@@ -33,4 +33,9 @@ export class ProductController {
     const product = await productService.createProduct(name, price, categoryId);
     return reply.status(201).send(product);
   };
+
+  static async getAll(_request: FastifyRequest, reply: FastifyReply) {
+    const products = await productService.getProducts();
+    return reply.status(200).send(products);
+  }
 };
