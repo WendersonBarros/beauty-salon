@@ -48,4 +48,17 @@ export class ProductService {
       categoryId: product.category
     }));
   };
+
+  async getProductById(id: number) {
+    const category = await this.productRepo.findOne({
+      where: { id },
+      relations: ['category'],
+    });
+
+    if (!category) {
+      throw new NotFoundError(`Product with id ${id} not found`);
+    }
+
+    return category;
+  };
 };
