@@ -22,7 +22,7 @@ export class ProductController {
       throw new BadRequestError("Product name is required.");
     }
 
-    if (price >= 0) {
+    if (typeof price !== "number" || price < 0) {
       throw new BadRequestError("Product price is required.");
     }
 
