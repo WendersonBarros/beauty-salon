@@ -38,4 +38,18 @@ export class ProductController {
     const products = await productService.getProducts();
     return reply.status(200).send(products);
   }
+
+  static async getOne(
+    request: FastifyRequest<{ Params: { id: number } }>,
+    reply: FastifyReply
+  ) {
+    const id = request.params.id;
+
+    if (!Number.isInteger(Number(id))) {
+      throw new BadRequestError("Invalid id, must be a number");
+    }
+
+    const product = await productService.getProductById(id);
+    return reply.status(200).send(product);
+  }
 };
