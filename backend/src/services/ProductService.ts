@@ -37,9 +37,15 @@ export class ProductService {
   };
 
   async getProducts() {
-    return this.productRepo.find({
-      relations: ['category'],
+    const products = await this.productRepo.find({
       loadRelationIds: true
     });
+
+    return products.map(product => ({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      categoryId: product.category
+    }));
   };
 };
