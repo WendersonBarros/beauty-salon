@@ -6,4 +6,5 @@ export default async function ProductRoutes(fastify: FastifyInstance) {
   fastify.get("/", ProductController.getAll);
   fastify.get("/:id", ProductController.getOne);
   fastify.patch("/:id", ProductController.update);
+  fastify.delete("/:id", ProductController.delete);
 };
