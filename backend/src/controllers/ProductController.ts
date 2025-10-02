@@ -63,6 +63,10 @@ export class ProductController {
     const id = request.params.id;
     const data = request.body;
 
+    if (!Number.isInteger(Number(id))) {
+      throw new BadRequestError("Invalid id, must be a number");
+    }
+
     if (!data.name && !data.price && !data.categoryId) {
       throw new BadRequestError("The request body can not be empty");
     }
