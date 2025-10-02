@@ -113,4 +113,14 @@ export class ProductService {
 
     return this.productRepo.save(product);
   };
+
+  async deleteProduct(id: number) {
+    const product = await this.productRepo.findOne({ where: { id } });
+
+    if (!product) {
+      throw new NotFoundError(`Product with id ${id} not found`);
+    }
+
+    return this.productRepo.remove(product);
+  }
 };
