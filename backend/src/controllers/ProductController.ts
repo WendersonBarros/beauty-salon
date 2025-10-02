@@ -74,4 +74,20 @@ export class ProductController {
     const product = await productService.updateProduct(id, data);
     return reply.status(200).send(product);
   };
+
+  static async delete(
+    request: FastifyRequest<{ Params: { id: number } }>,
+    reply: FastifyReply
+  ) {
+    const id = request.params.id;
+
+    if (!Number.isInteger(Number(id))) {
+      throw new BadRequestError("Invalid id, must be a number");
+    }
+
+    const deletedProduct = await productService.deleteProduct(id);
+    return reply.status(200).send({
+      message: `Product '${deletedProduct.name}' deleted successfully`
+    });
+  };
 };
