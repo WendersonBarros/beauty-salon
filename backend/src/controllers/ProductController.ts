@@ -52,4 +52,22 @@ export class ProductController {
     const product = await productService.getProductById(id);
     return reply.status(200).send(product);
   }
+
+  static async update(
+    request: FastifyRequest<{
+      Params: { id: number },
+      Body: Partial<{ name: string, price: number, categoryId: number }>
+    }>,
+    reply: FastifyReply
+  ) {
+    const id = request.params.id;
+    const data = request.body;
+
+    if (!data.name && !data.price && !data.categoryId) {
+      throw new BadRequestError("The request body can not be empty");
+    }
+
+    const product = await productService.updateProduct(id, data);
+    return reply.status(200).send(product);
+  };
 };
