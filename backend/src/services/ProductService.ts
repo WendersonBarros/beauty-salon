@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
 import { Product } from "../entity/Product";
 import { Category } from "../entity/Category";
-import { ConflictError, NotFoundError } from "../utils/errors";
+import { BadRequestError, ConflictError, NotFoundError } from "../utils/errors";
 
 export class ProductService {
   constructor(
@@ -50,15 +50,67 @@ export class ProductService {
   };
 
   async getProductById(id: number) {
-    const category = await this.productRepo.findOne({
+    const product = await this.productRepo.findOne({
       where: { id },
       relations: ['category'],
     });
 
-    if (!category) {
+    if (!product) {
       throw new NotFoundError(`Product with id ${id} not found`);
     }
 
-    return category;
+    return product;
+  };
+
+  async updateProduct(
+    id: number,
+    data: Partial<{ name: string, price: number, categoryId: number }>
+  ) {
+    const product = await this.productRepo.findOne({
+      where: { id },
+      relations: ['category']
+    });
+
+    if (!product) {
+      throw new NotFoundError(`Product with id ${id} not found`);
+    }
+
+    if (data.name !== undefined) {
+      if (!data.name.trim().length) {
+        throw new BadRequestError("Product name can not be empty");
+      }
+      product.name = data.name.trim();
+    }
+
+    if (data.price !== undefined) {
+      if (typeof data.price !== "number" || data.price < 0) {
+        throw new BadRequestError("Price must be a non-negative number");
+      }
+      product.price = data.price;
+    }
+
+    if (data.categoryId !== undefined) {
+      const category = await this.categoryRepo.findOne({
+        where: { id: data.categoryId }
+      });
+
+      if (!category) {
+        throw new NotFoundError(`Category with id ${data.categoryId} not found`);
+      }
+
+      product.category = category;
+    }
+
+    const existing = await this.productRepo.findOne({
+      where: { name: product.name, category: product.category }
+    });
+
+    if (existing && existing.id !== Number(id)) {
+      throw new ConflictError(
+        "Product with the same name already exists inside this category"
+      );
+    }
+
+    return this.productRepo.save(product);
   };
 };
