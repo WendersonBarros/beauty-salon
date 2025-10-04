@@ -12,6 +12,6 @@ export class Product {
   @Column()
   price: number
 
-  @ManyToOne(() => Category, (category) => category.products)
+  @ManyToOne(() => Category, (category) => category.products, { onDelete: 'CASCADE' })
   category: Category;
 }

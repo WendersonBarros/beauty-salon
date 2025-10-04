@@ -63,7 +63,7 @@ export class CategoryController {
 
     const deletedCategory = await categoryService.deleteCategory(id);
     return reply.status(200).send({
-      message: `Category '${deletedCategory.name}' deleted successfully`
+      message: `Category '${deletedCategory.name}' and it's products were deleted successfully`
     });
   }
 };
