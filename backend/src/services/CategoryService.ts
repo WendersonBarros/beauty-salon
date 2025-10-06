@@ -3,7 +3,7 @@ import { Category } from "../entity/Category";
 import { ConflictError, NotFoundError } from "../utils/errors";
 
 export class CategoryService {
-  constructor(private categoryRepo: Repository<Category>) {}
+  constructor(private categoryRepo: Repository<Category>) { }
 
   async createCategory(name: string) {
     const existing = await this.categoryRepo.findOne({
@@ -21,11 +21,14 @@ export class CategoryService {
   }
 
   async getCategories() {
-    return await this.categoryRepo.find();
+    return await this.categoryRepo.find({ relations: ['products'] });
   }
 
   async getCategoryById(id: number) {
-    const category = await this.categoryRepo.findOne({ where: { id } });
+    const category = await this.categoryRepo.findOne({
+      where: { id },
+      relations: ['products']
+    });
 
     if (!category) {
       throw new NotFoundError(`Category with id ${id} not found`);
@@ -35,7 +38,10 @@ export class CategoryService {
   }
 
   async updateCategory(id: number, name: string) {
-    const category = await this.categoryRepo.findOne({ where: { id } });
+    const category = await this.categoryRepo.findOne({
+      where: { id },
+      relations: ['products']
+    });
 
     if (!category) {
       throw new NotFoundError(`Category with id ${id} not found`);
