@@ -293,3 +293,49 @@ describe("Product.updateProduct", () => {
     }
   );
 });
+
+describe("Product.deleteProduct", () => {
+  let mockProductRepo: any;
+  let mockCategoryRepo: any;
+  let productService: ProductService;
+
+  beforeEach(() => {
+    mockProductRepo = {
+      findOne: jest.fn(),
+      remove: jest.fn(),
+    };
+    mockCategoryRepo = {};
+    productService = new ProductService(mockProductRepo, mockCategoryRepo);
+    jest.clearAllMocks();
+  });
+
+  test(
+    "It should throw NotFoundError if product not found",
+    async () => {
+      mockProductRepo.findOne.mockResolvedValue(null);
+
+      await expect(productService.deleteProduct(1))
+        .rejects.toThrow(NotFoundError);
+      expect(mockProductRepo.findOne).toHaveBeenCalledWith({
+        where: { id: 1 }
+      });
+    }
+  );
+
+  test(
+    "It should delete the product if it exists",
+    async () => {
+      const product = { id: 1, name: "DeleteMe", price: 100 };
+      const deleted = { id: undefined, name: "DeleteMe", price: 100 };
+
+      mockProductRepo.findOne.mockResolvedValue(product);
+      mockProductRepo.remove.mockResolvedValue(deleted);
+
+      const result = await productService.deleteProduct(1);
+
+      expect(mockProductRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(mockProductRepo.remove).toHaveBeenCalledWith(product);
+      expect(result).toStrictEqual(deleted);
+    }
+  );
+});
