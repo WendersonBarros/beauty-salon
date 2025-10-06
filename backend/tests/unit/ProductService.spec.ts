@@ -121,3 +121,40 @@ describe("Product.getProducts", () => {
     }
   );
 });
+
+describe("Product.getProductById", () => {
+  let mockProductRepo: any;
+  let mockCategoryRepo: any;
+  let productService: ProductService;
+
+  beforeEach(() => {
+    mockProductRepo = { findOne: jest.fn() };
+    mockCategoryRepo = {};
+    productService = new ProductService(mockProductRepo, mockCategoryRepo);
+    jest.clearAllMocks();
+  });
+
+  test(
+    "It should throw NotFoundError if product not found",
+    async () => {
+      mockProductRepo.findOne.mockResolvedValue(null);
+
+      await expect(productService.getProductById(1)).rejects.toThrow(NotFoundError);
+      expect(mockProductRepo.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ["category"],
+      });
+    }
+  );
+
+  test(
+    "It should return the product if found",
+    async () => {
+      const product = { id: 1, name: "P1", price: 100, category: { id: 1 } };
+      mockProductRepo.findOne.mockResolvedValue(product);
+
+      const result = await productService.getProductById(1);
+      expect(result).toStrictEqual(product);
+    }
+  );
+});
