@@ -86,7 +86,7 @@ describe("Category.getCategories", () => {
 
       const result = await categoryService.getCategories();
 
-      expect(mockRepo.find).toHaveBeenCalled();
+      expect(mockRepo.find).toHaveBeenCalledWith({ relations: ['products'] });
       expect(result).toStrictEqual([]);
     }
   );
@@ -95,17 +95,30 @@ describe("Category.getCategories", () => {
     "It should return all categories as an array",
     async () => {
       const categories = [
-        { id: 1, name: "category 1" },
-        { id: 2, name: "category 2" },
-        { id: 3, name: "category 3" },
-        { id: 4, name: "category 4" }
+        {
+          id: 1, name: "category 1", products: [
+            {
+              id: 1,
+              name: "Product a",
+              price: 120
+            },
+            {
+              id: 2,
+              name: "Product b",
+              price: 150
+            }
+          ]
+        },
+        { id: 2, name: "category 2", products: [] },
+        { id: 3, name: "category 3", products: [] },
+        { id: 4, name: "category 4", products: [] }
       ];
 
       mockRepo.find.mockResolvedValue(categories);
 
       const result = await categoryService.getCategories();
 
-      expect(mockRepo.find).toHaveBeenCalled();
+      expect(mockRepo.find).toHaveBeenCalledWith({ relations: ['products'] });
       expect(result).toStrictEqual(categories);
     }
   );
@@ -134,19 +147,40 @@ describe("Category.getCategoryById", () => {
 
       await expect(categoryService.getCategoryById(1))
         .rejects.toThrow(NotFoundError);
-      expect(mockRepo.findOne).toHaveBeenCalled();
+      expect(mockRepo.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ['products']
+      });
     }
   );
 
   test(
     "It should return the the category with the given ID",
     async () => {
-      const category = { id: 1, name: "Category 1" };
+      const category = {
+        id: 1,
+        name: "Category 1",
+        products: [
+          {
+            id: 1,
+            name: "Product a",
+            price: 120
+          },
+          {
+            id: 2,
+            name: "Product b",
+            price: 150
+          }
+        ]
+      };
       mockRepo.findOne.mockResolvedValue(category);
 
       const result = await categoryService.getCategoryById(1);
 
-      expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(mockRepo.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ['products']
+      });
       expect(result).toStrictEqual(category);
     }
   );
@@ -177,19 +211,25 @@ describe("Category.updateCategory", () => {
 
       await expect(categoryService.updateCategory(1, ""))
         .rejects.toThrow(NotFoundError);
-      expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(mockRepo.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ['products']
+      });
     }
   );
 
   test(
     "It should return an error when trying to update a category with an existing name",
     async () => {
-      const existingCategory = { id: 1, name: "Existing category" }
+      const existingCategory = { id: 1, name: "Existing category", products: [] }
       mockRepo.findOne.mockResolvedValue(existingCategory);
 
       await expect(categoryService.updateCategory(2, existingCategory.name))
         .rejects.toThrow(ConflictError);
-      expect(mockRepo.findOne).toHaveBeenNthCalledWith(1, { where: { id: 2 } });
+      expect(mockRepo.findOne).toHaveBeenNthCalledWith(1, {
+        where: { id: 2 },
+        relations: ['products']
+      });
       expect(mockRepo.findOne).toHaveBeenNthCalledWith(2, {
         where: { name: existingCategory.name }
       });
@@ -200,7 +240,7 @@ describe("Category.updateCategory", () => {
     "It should update the category if no error was thrown",
     async () => {
       const id = 1;
-      const categoryToUpdate = { id, name: "Category to update" };
+      const categoryToUpdate = { id, name: "Category to update", products: [] };
       mockRepo.findOne
         .mockResolvedValueOnce(categoryToUpdate)
         .mockResolvedValueOnce(null);
@@ -212,7 +252,8 @@ describe("Category.updateCategory", () => {
       const result = await categoryService.updateCategory(id, categoryToUpdate.name);
 
       expect(mockRepo.findOne).toHaveBeenNthCalledWith(1, {
-        where: { id }
+        where: { id },
+        relations: ['products']
       });
       expect(mockRepo.findOne).toHaveBeenNthCalledWith(2, {
         where: { name: categoryToUpdate.name }
@@ -220,7 +261,8 @@ describe("Category.updateCategory", () => {
       expect(mockRepo.save).toHaveBeenCalledWith(categoryToUpdate);
       expect(result).toStrictEqual({
         id,
-        name: "Updated category"
+        name: "Updated category",
+        products: []
       });
     }
   );
