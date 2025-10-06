@@ -78,3 +78,46 @@ describe("Product.createProduct", () => {
     }
   );
 });
+
+describe("Product.getProducts", () => {
+  let mockProductRepo: any;
+  let mockCategoryRepo: any;
+  let productService: ProductService;
+
+  beforeEach(() => {
+    mockProductRepo = { find: jest.fn() };
+    mockCategoryRepo = {};
+    productService = new ProductService(mockProductRepo, mockCategoryRepo);
+    jest.clearAllMocks();
+  });
+
+  test(
+    "It should return an empty array when no products exist",
+    async () => {
+      mockProductRepo.find.mockResolvedValue([]);
+
+      const result = await productService.getProducts();
+
+      expect(mockProductRepo.find).toHaveBeenCalledWith({ loadRelationIds: true });
+      expect(result).toStrictEqual([]);
+    }
+  );
+
+  test(
+    "It should return all products with categoryId mapped",
+    async () => {
+      const products = [
+        { id: 1, name: "P1", price: 100, category: 1 },
+        { id: 2, name: "P2", price: 200, category: 2 },
+      ];
+      mockProductRepo.find.mockResolvedValue(products);
+
+      const result = await productService.getProducts();
+
+      expect(result).toStrictEqual([
+        { id: 1, name: "P1", price: 100, categoryId: 1 },
+        { id: 2, name: "P2", price: 200, categoryId: 2 },
+      ]);
+    }
+  );
+});
