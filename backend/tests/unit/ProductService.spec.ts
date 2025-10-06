@@ -158,3 +158,138 @@ describe("Product.getProductById", () => {
     }
   );
 });
+
+describe("Product.updateProduct", () => {
+  let mockProductRepo: any;
+  let mockCategoryRepo: any;
+  let productService: ProductService;
+
+  beforeEach(() => {
+    mockProductRepo = {
+      findOne: jest.fn(),
+      save: jest.fn(),
+    };
+    mockCategoryRepo = { findOne: jest.fn() };
+    productService = new ProductService(mockProductRepo, mockCategoryRepo);
+    jest.clearAllMocks();
+  });
+
+  test(
+    "It should throw NotFoundError if product not found",
+    async () => {
+      mockProductRepo.findOne.mockResolvedValue(null);
+
+      await expect(productService.updateProduct(1, { name: "New" }))
+        .rejects.toThrow(NotFoundError);
+
+      expect(mockProductRepo.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ['category']
+      });
+    }
+  );
+
+  test(
+    "It should throw BadRequestError if new name is empty",
+    async () => {
+      const product = { id: 1, name: "Old", price: 100, category: { id: 1 } };
+      mockProductRepo.findOne.mockResolvedValue(product);
+
+      await expect(productService.updateProduct(1, { name: "   " }))
+        .rejects.toThrow(BadRequestError);
+
+      expect(mockProductRepo.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ['category']
+      });
+    }
+  );
+
+  test(
+    "It should throw BadRequestError if price is invalid",
+    async () => {
+      const product = { id: 1, name: "Old", price: 100, category: { id: 1 } };
+      mockProductRepo.findOne.mockResolvedValue(product);
+
+      await expect(productService.updateProduct(1, { price: -10 }))
+        .rejects.toThrow(BadRequestError);
+
+      expect(mockProductRepo.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ['category']
+      });
+    }
+
+
+  );
+
+  test(
+    "It should throw NotFoundError if new categoryId does not exist",
+    async () => {
+      const product = { id: 1, name: "Old", price: 100, category: { id: 1 } };
+      mockProductRepo.findOne.mockResolvedValue(product);
+      mockCategoryRepo.findOne.mockResolvedValue(null);
+
+      await expect(productService.updateProduct(1, { categoryId: 99 }))
+        .rejects.toThrow(NotFoundError);
+
+      expect(mockProductRepo.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ['category']
+      });
+      expect(mockCategoryRepo.findOne).toHaveBeenCalledWith({ where: { id: 99 } });
+    }
+  );
+
+  test(
+    "It should throw ConflictError if another product with same name in category exists",
+    async () => {
+      const product = { id: 1, name: "Old", price: 100, category: { id: 1 } };
+      const otherProduct = { id: 2, name: "New", price: 200, category: { id: 1 } };
+
+      mockProductRepo.findOne
+        .mockResolvedValueOnce(product)
+        .mockResolvedValueOnce(otherProduct);
+
+      await expect(productService.updateProduct(1, { name: "New" }))
+        .rejects.toThrow(ConflictError);
+
+      expect(mockProductRepo.findOne).toHaveBeenNthCalledWith(1,
+        { where: { id: 1 }, relations: ['category'] }
+      );
+      expect(mockProductRepo.findOne).toHaveBeenNthCalledWith(2,
+        { where: { name: "New", category: product.category } }
+      );
+    }
+  );
+
+  test(
+    "It should update product when valid data is provided",
+    async () => {
+      const product = { id: 1, name: "Old", price: 100, category: { id: 1 } };
+      const updated = { ...product, name: "Updated", price: 150 };
+
+      mockProductRepo.findOne
+        .mockResolvedValueOnce(product)
+        .mockResolvedValueOnce(null);
+      mockProductRepo.save.mockResolvedValue(updated);
+
+      const result = await productService.updateProduct(1, {
+        name: "Updated",
+        price: 150,
+      });
+
+      expect(mockProductRepo.findOne).toHaveBeenNthCalledWith(1,
+        { where: { id: 1 }, relations: ['category'] }
+      );
+      expect(mockProductRepo.findOne).toHaveBeenNthCalledWith(2,
+        { where: { name: "Updated", category: product.category } }
+      );
+      expect(mockProductRepo.save).toHaveBeenCalledWith(expect.objectContaining({
+        name: "Updated",
+        price: 150,
+      }));
+      expect(result).toStrictEqual(updated);
+    }
+  );
+});
