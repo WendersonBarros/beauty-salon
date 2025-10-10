@@ -2,6 +2,7 @@ import salonPhoto from "../../assets/salon.jpg";
 import About from "./About";
 import Gallery from "./Gallery.tsx";
 import Reviews from "./Reviews.tsx";
+import Links from "./Links.tsx";
 
 function Home() {
   return (
@@ -19,6 +20,7 @@ function Home() {
       <About />
       <Gallery />
       <Reviews />
+      <Links/>
     </main>
   )
 }
