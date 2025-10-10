@@ -1,5 +1,6 @@
 import salonPhoto from "../../assets/salon.jpg";
 import About from "./About";
+import Gallery from "./Gallery.tsx";
 
 function Home() {
   return (
@@ -11,11 +12,8 @@ function Home() {
           className="rounded-xl w-full object-cover border-3"
         />
       </figure>
-
       <About />
-
-      <section>
-      </section>
+      <Gallery />
     </main>
   )
 }

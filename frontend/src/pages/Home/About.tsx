@@ -1,7 +1,7 @@
 function About() {
   return (
     <section
-      className="flex flex-col items-center w-full max-w-5xl gap-3 mb-5 bg-darkYellow p-3 rounded-xl"
+      className="flex flex-col items-center w-full gap-3 bg-darkYellow p-3 rounded-xl"
     >
       <h2 className="font-bold text-2xl text-white">Sobre o salão:</h2>
 
