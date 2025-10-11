@@ -10,8 +10,18 @@ function Links() {
       </h2>
 
       <div className="flex justify-center gap-10">
-        <SiInstagram className="text-4xl text-darkYellow cursor-pointer" />
-        <SiGooglemaps className="text-4xl text-darkYellow cursor-pointer" />
+        <a
+          target="_blank"
+          href="https://www.instagram.com/suzanebarros5/"
+        >
+          <SiInstagram className="text-4xl text-darkYellow cursor-pointer" />
+        </a>
+        <a
+          target="_blank"
+          href="https://maps.app.goo.gl/b8aZJ2EvBZckwgVv9"
+        >
+          <SiGooglemaps className="text-4xl text-darkYellow cursor-pointer" />
+        </a>
       </div>
     </section>
   )
