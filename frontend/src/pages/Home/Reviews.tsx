@@ -33,16 +33,16 @@ function Reviews() {
 
   return (
     <section
-      className="flex flex-col items-center w-[95%]"
+      className="flex flex-col items-center w-[95%] [grid-area:dd]"
     >
-      <h2 className="font-bold text-2xl text-white my-4">Reviews:</h2>
+      <h2 className="font-bold text-2xl text-white my-4">Avaliações:</h2>
 
       {reviews.map((review, idx) => {
         const isEven = idx % 2 == 0;
         return <div
           key={idx}
           className={`flex flex-col w-full p-7
-          ${(reviews.length - 1) == idx ? "" : "mb-[5vw]"}
+          ${(reviews.length - 1) == idx ? "" : "mb-[7vw] lg:mb-24"}
           rounded-2xl gap-4 ${isEven
               ? "border-1 border-gray-500"
               : "bg-darkYellow text-black rotate-345"}

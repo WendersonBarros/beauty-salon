@@ -7,10 +7,17 @@ import Links from "./Links.tsx";
 function Home() {
   return (
     <main
-      className="flex flex-col  items-center bg-black min-h-[80%] w-full
+      className="grid md:grid-cols-2 
+      [grid-template-areas:'aa'_'bb'_'cc'_'dd'_'ee']
+      md:[grid-template-areas:'aa_bb'_'cc_cc'_'dd_dd'_'ee_ee']
+      lg:[grid-template-areas:'aa_bb_bb'_'cc_cc_cc'_'dd_dd_dd'_'ee_ee_ee']
+      auto-cols-fr justify-items-center bg-black min-h-[80%] w-full
       text-white px-2 gap-4 overflow-x-hidden"
     >
-      <figure className="w-full flex justify-center max-w-4xl m-auto">
+      <figure
+        className="w-full flex justify-center
+        max-w-4xl m-auto [grid-area:aa]"
+      >
         <img
           src={salonPhoto}
           alt="Foto do espaço do salão de beleza"
@@ -20,7 +27,7 @@ function Home() {
       <About />
       <Gallery />
       <Reviews />
-      <Links/>
+      <Links />
     </main>
   )
 }

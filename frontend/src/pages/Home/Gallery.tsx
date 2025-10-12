@@ -10,10 +10,14 @@ function Gallery() {
   const images = [nail1, nail2, nail3, nail4, nail5, nail6];
 
   return (
-    <section className="w-full my-4">
-      <div className="flex justify-between flex-wrap gap-y-4 gap-x-2">
+    <section className="w-full my-4 [grid-area:cc]">
+      <div className="grid md:grid-cols-3 gap-y-4 gap-x-2">
         {images.map((image, idx) => {
-          return <Card key={idx} image={image} styles="w-60 h-60 mx-auto" />
+          return <Card
+            key={idx}
+            image={image}
+            styles="w-63 h-63 lg:w-75 lg:h-75 mx-auto"
+          />
         })}
       </div>
     </section>
