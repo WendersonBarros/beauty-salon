@@ -8,7 +8,7 @@ function Header() {
   return (
     <header
       className="flex justify-between items-center py-5 z-1
-    px-3 min-h-[10%] text-white sticky top-0 bg-black"
+    px-3 text-white sticky top-0 bg-black"
     >
       <div
         className="flex items-center gap-1 w-[50%] cursor-pointer"
@@ -37,8 +37,12 @@ function Header() {
         </Link>
         <Link
           to="/prices"
-          className="text-white hover:text-darkYellow
-          font-semibold text-sm md:text-xl text-center cursor-pointer"
+          className={`${pathname === "/prices"
+            ? "text-darkYellow font-bold"
+            : "text-white font-semibold"
+            }
+          hover:text-darkYellow md:text-xl
+          text-sm text-center cursor-pointer`}
         >
           Preços
         </Link>
