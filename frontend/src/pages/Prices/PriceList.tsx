@@ -1,68 +1,64 @@
 import { useState } from "react";
 import { IoMdSearch } from "react-icons/io";
+import { useGetCategories } from "../../hooks/categories";
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
 
 function PriceList() {
   const [filter, setFilter] = useState("");
+  const { isPending, isError, error, data } = useGetCategories();
 
-  const services = [
-    {
-      id: 1,
-      name: "Manicure",
-      products: [
-        { id: 1, name: "Manicure simples", price: 35 },
-        { id: 2, name: "Esmaltação em gel", price: 55 },
-        { id: 3, name: "Alongamento de unhas", price: 120 },
-        { id: 4, name: "Manutenção de alongamento", price: 80 },
-        { id: 5, name: "Nail art personalizada", price: 25 },
-      ],
-    },
-    {
-      id: 2,
-      name: "Pedicure",
-      products: [
-        { id: 6, name: "Pedicure simples", price: 40 },
-        { id: 7, name: "Pedicure completa", price: 60 },
-        { id: 8, name: "Spa dos pés", price: 90 },
-        { id: 9, name: "Hidratação profunda", price: 45 },
-        { id: 10, name: "Esmaltação em gel", price: 50 },
-      ],
-    },
-    {
-      id: 3,
-      name: "Sobrancelha",
-      products: [
-        { id: 11, name: "Design de sobrancelha", price: 35 },
-        { id: 12, name: "Design com pinça", price: 30 },
-        { id: 13, name: "Design com rena", price: 55 },
-        { id: 14, name: "Henna para sobrancelhas", price: 50 },
-        { id: 15, name: "Brow lamination (lifting)", price: 85 },
-      ],
-    },
-    {
-      id: 4,
-      name: "Spa",
-      products: [
-        { id: 16, name: "Massagem relaxante", price: 120 },
-        { id: 17, name: "Limpeza de pele", price: 110 },
-        { id: 18, name: "Esfoliação corporal", price: 90 },
-        { id: 19, name: "Hidratação corporal", price: 100 },
-        { id: 20, name: "Banho de lua", price: 80 },
-      ],
-    },
-    {
-      id: 5,
-      name: "Depilação",
-      products: [
-        { id: 21, name: "Depilação de buço", price: 25 },
-        { id: 22, name: "Depilação de axila", price: 35 },
-        { id: 23, name: "Depilação de meia perna", price: 55 },
-        { id: 24, name: "Depilação de perna completa", price: 80 },
-        { id: 25, name: "Depilação íntima", price: 90 },
-      ],
-    },
-  ];
+  if (isPending) {
+    return <section className="min-h-screen w-full">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        {Array.from({ length: 9 }).map((_, idx) =>
+          <div key={idx} className="flex flex-col gap-2">
+            <Skeleton
+              baseColor="#f7971f"
+              height={"3.5rem"}
+              width="100%"
+              style={{ opacity: 0.7 }}
+            />
+            <Skeleton
+              baseColor="#ffffff"
+              height={"2.5rem"}
+              width="100%"
+              style={{ opacity: 0.5 }}
+            />
+            <Skeleton
+              baseColor="#f7971f"
+              height={"2.5rem"}
+              width="100%"
+              style={{ opacity: 0.5 }}
+            />
+            <Skeleton
+              baseColor="#ffffff"
+              height={"2.5rem"}
+              width="100%"
+              style={{ opacity: 0.5 }}
+            />
+            <Skeleton
+              baseColor="#f7971f"
+              height={"2.5rem"}
+              width="100%"
+              style={{ opacity: 0.5 }}
+            />
+          </div>
+        )}
+      </div>
+    </section>
+  }
 
-  const filteredServices = services
+  if (isError) {
+    return <section
+      className="text-white min-h-screen flex flex-col items-center mt-4"
+    >
+      <h2 className="text-2xl">Ocorreu um erro inesperado: </h2>
+      <b className="text-xl text-red-600">{error.message}</b>
+    </section>
+  }
+
+  const filteredServices = data
     .map(category => {
       const matchesCategory = category.name.toLowerCase().includes(
         filter.toLowerCase()
@@ -84,13 +80,15 @@ function PriceList() {
       <search className="flex flex-col w-full gap-5">
         <label
           htmlFor="search"
-          className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+          className="mb-2 text-sm font-medium text-gray-900 sr-only 
+          dark:text-white"
         >
           Pesquisar serviço
         </label>
         <div className="relative">
           <div
-            className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
+            className="absolute inset-y-0 start-0 flex items-center ps-3
+            pointer-events-none"
           >
             <IoMdSearch className="text-xl text-darkYellow" />
           </div>
@@ -100,8 +98,8 @@ function PriceList() {
             value={filter}
             onChange={event => setFilter(event.target.value)}
             placeholder="Digite o nome do serviço (unha em gel, pedicure, sobrancelha...)"
-            className="w-full p-4 ps-10 text-sm text-black border-2 rounded-lg bg-gray-50
-          focus:outline-none focus:border-darkYellow"
+            className="w-full p-4 ps-10 text-sm text-black border-2
+            rounded-lg bg-gray-50 focus:outline-none focus:border-darkYellow"
           />
         </div>
 
