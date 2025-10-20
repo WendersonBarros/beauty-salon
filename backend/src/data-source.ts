@@ -3,6 +3,7 @@ import { DataSource } from "typeorm"
 import { Category } from "./entity/Category"
 import { Product } from "./entity/Product"
 import * as dotenv from "dotenv";
+import { Admin } from "./entity/Admin";
 dotenv.config();
 
 export const AppDataSource = new DataSource({
@@ -14,7 +15,7 @@ export const AppDataSource = new DataSource({
     database: process.env.POSTGRES_DB,
     synchronize: true,
     logging: false,
-    entities: [Category, Product],
+    entities: [Category, Product, Admin],
     migrations: [],
     subscribers: [],
 });
