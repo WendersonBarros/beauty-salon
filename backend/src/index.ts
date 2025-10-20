@@ -1,8 +1,10 @@
+/// <reference path="./types/fastify.d.ts" />
 import { AppDataSource } from "./data-source"
 import Fastify from "fastify"
+import AdminRoutes from "./routes/AdminRoutes";
 import CategoryRoutes from "./routes/CategoryRoutes";
 import ProductRoutes from "./routes/ProductRoutes";
-import { BadRequestError, ConflictError, NotFoundError } from "./utils/errors";
+import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from "./utils/errors";
 import cors from "@fastify/cors";
 
 AppDataSource.initialize().then(async () => {
@@ -11,12 +13,17 @@ AppDataSource.initialize().then(async () => {
     origin: "http://localhost:5173",
   })
 
+  app.register(AdminRoutes, { prefix: "/admin" });
   app.register(CategoryRoutes, { prefix: "/categories" });
   app.register(ProductRoutes, { prefix: "/products" });
 
   app.setErrorHandler((error, request, reply) => {
     if (error instanceof BadRequestError) {
       return reply.status(400).send({ error: error.message });
+    }
+
+    if (error instanceof UnauthorizedError) {
+      return reply.status(401).send({ error: error.message });
     }
 
     if (error instanceof NotFoundError) {
