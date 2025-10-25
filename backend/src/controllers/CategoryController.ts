@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { CategoryService } from "../services/CategoryService";
-import { BadRequestError, ConflictError, NotFoundError } from "../utils/errors";
+import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from "../utils/errors";
 import { AppDataSource } from "../data-source";
 import { Category } from "../entity/Category";
 
@@ -11,12 +11,16 @@ export class CategoryController {
   static async create(request: FastifyRequest<{ Body: { name: string } }>, reply: FastifyReply) {
     const { name } = request.body;
 
+    if (!request.user) {
+      throw new UnauthorizedError("You are not logged in");
+    }
+
     if (!name?.trim().length) {
       throw new BadRequestError("Category name is required");
     }
 
     const category = await categoryService.createCategory(name);
-    return reply.status(201).send(category);
+    return reply.status(201).send({ category, user: request.user });
   }
 
   static async getAll(_request: FastifyRequest, reply: FastifyReply) {
@@ -42,6 +46,10 @@ export class CategoryController {
     const id = request.params.id;
     const name = request.body.name;
 
+    if (!request.user) {
+      throw new UnauthorizedError("You are not logged in");
+    }
+
     if (!Number.isInteger(Number(id))) {
       throw new BadRequestError("Invalid id, must be a number");
     }
@@ -56,6 +64,10 @@ export class CategoryController {
 
   static async delete(request: FastifyRequest<{ Params: { id: number } }>, reply: FastifyReply) {
     const id = request.params.id;
+
+    if (!request.user) {
+      throw new UnauthorizedError("You are not logged in");
+    }
 
     if (!Number.isInteger(Number(id))) {
       throw new BadRequestError("Invalid id, must be a number");
