@@ -15,22 +15,32 @@ export const authMiddleware = async (
   reply: FastifyReply,
 ) => {
   const { authorization } = request.headers;
+  const refreshToken = request.cookies["refreshToken"];
 
-  if (!authorization) {
-    throw new UnauthorizedError("You are not logged in");
+  if (!authorization && !refreshToken) {
+    throw new UnauthorizedError("Access Denied. No token provided");
   }
 
-  const token = authorization.split(" ")[1];
+  try {
+    const token = authorization.split(" ")[1];
 
-  const { id } = jwt.verify(token, process.env.JWT_SECRET) as JWTPayload;
+    const { id } = jwt.verify(token, process.env.JWT_SECRET) as JWTPayload;
 
-  const adminRepo = AppDataSource.getRepository(Admin);
-  const user = await adminRepo.findOne({ where: { id } });
+    const adminRepo = AppDataSource.getRepository(Admin);
+    const user = await adminRepo.findOne({ where: { id } });
 
-  if (!user) {
-    throw new UnauthorizedError("You are not authorized");
+    if (!user) {
+      throw new UnauthorizedError("You are not authorized");
+    }
+
+    const { password: _, ...loggedUser } = user;
+    request.user = loggedUser;
+  } catch (error) {
+    if (!refreshToken) {
+      throw new UnauthorizedError("Access Denied. No refresh token provided");
+    }
+    
+    //TODO: implement refresh token method
   }
-  
-  const { password:_, ...loggedUser} = user;
-  request.user = loggedUser;
+
 }
