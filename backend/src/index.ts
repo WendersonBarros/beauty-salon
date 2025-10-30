@@ -6,12 +6,14 @@ import CategoryRoutes from "./routes/CategoryRoutes";
 import ProductRoutes from "./routes/ProductRoutes";
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from "./utils/errors";
 import cors from "@fastify/cors";
+import fastifyCookie from "@fastify/cookie";
 
 AppDataSource.initialize().then(async () => {
   const app = Fastify({ logger: true });
   await app.register(cors, {
     origin: "http://localhost:5173",
   })
+  app.register(fastifyCookie);
 
   app.register(AdminRoutes, { prefix: "/admin" });
   app.register(CategoryRoutes, { prefix: "/categories" });
