@@ -28,7 +28,23 @@ export class AdminService {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
+    const refreshToken = jwt.sign(
+      { id: admin.id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
 
-    return { token }
+    return { token, refreshToken }
+  }
+
+  async generateAccessTokenFromRefreshToken(token: string) {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as { id: number };
+    const newToken = jwt.sign(
+      { id: decoded.id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    return newToken;
   }
 }
