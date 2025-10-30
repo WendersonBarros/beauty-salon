@@ -2,7 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { AppDataSource } from "../data-source";
 import { Admin } from "../entity/Admin";
 import { AdminService } from "../services/AdminService";
-import { BadRequestError } from "../utils/errors";
+import { BadRequestError, UnauthorizedError } from "../utils/errors";
 
 const adminRepo = AppDataSource.getRepository(Admin);
 const adminService = new AdminService(adminRepo);
@@ -22,7 +22,34 @@ export class AdminController {
       throw new BadRequestError("Password is required");
     }
 
-    const token = await adminService.adminLogin(login, password);
-    return reply.status(200).send(token);
+    const { token, refreshToken } = await adminService.adminLogin(
+      login, password
+    );
+
+    return reply
+      .cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' })
+      .header('Authorization', token)
+      .status(200).send("Login successful");
+  }
+
+  static async refreshAcessToken(
+    request: FastifyRequest,
+    reply: FastifyReply
+  ) {
+    const refreshTokenValue = request.cookies["refreshToken"];
+    if (!refreshTokenValue) {
+      throw new UnauthorizedError("Access Denied. No refresh token provided");
+    }
+
+    try {
+      const newAcessToken = adminService
+        .generateAccessTokenFromRefreshToken(refreshTokenValue);
+
+      reply
+        .header("Authorization", newAcessToken)
+        .status(200).send("Token refreshed successfully");
+    } catch (error) {
+      throw new UnauthorizedError("Invalid refresh token");
+    }
   }
 }
