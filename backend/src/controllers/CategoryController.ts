@@ -20,7 +20,7 @@ export class CategoryController {
     }
 
     const category = await categoryService.createCategory(name);
-    return reply.status(201).send({ category, user: request.user });
+    return reply.status(201).send({ category });
   }
 
   static async getAll(_request: FastifyRequest, reply: FastifyReply) {
