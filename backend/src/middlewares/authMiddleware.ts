@@ -12,20 +12,17 @@ type JWTPayload = {
 
 export const authMiddleware = async (
   request: FastifyRequest,
-  reply: FastifyReply,
+  _reply: FastifyReply,
 ) => {
   const { authorization } = request.headers;
-  const refreshToken = request.cookies["refreshToken"];
 
-  if (!authorization && !refreshToken) {
+  if (!authorization) {
     throw new UnauthorizedError("Access Denied. No token provided");
   }
 
   try {
     const token = authorization.split(" ")[1];
-
     const { id } = jwt.verify(token, process.env.JWT_SECRET) as JWTPayload;
-
     const adminRepo = AppDataSource.getRepository(Admin);
     const user = await adminRepo.findOne({ where: { id } });
 
@@ -36,11 +33,6 @@ export const authMiddleware = async (
     const { password: _, ...loggedUser } = user;
     request.user = loggedUser;
   } catch (error) {
-    if (!refreshToken) {
-      throw new UnauthorizedError("Access Denied. No refresh token provided");
-    }
-    
-    //TODO: implement refresh token method
+    throw new UnauthorizedError("Invalid or expired token");
   }
-
 }
