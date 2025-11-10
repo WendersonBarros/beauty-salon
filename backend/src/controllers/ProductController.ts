@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { AppDataSource } from "../data-source";
-import { BadRequestError, ConflictError, NotFoundError } from "../utils/errors";
+import { BadRequestError, UnauthorizedError } from "../utils/errors";
 import { Product } from "../entity/Product";
 import { ProductService } from "../services/ProductService";
 import { Category } from "../entity/Category";
@@ -17,6 +17,10 @@ export class ProductController {
     reply: FastifyReply
   ) {
     const { name, price, categoryId } = request.body;
+
+    if (!request.user) {
+      throw new UnauthorizedError("You are not logged in");
+    }
 
     if (!name?.trim().length) {
       throw new BadRequestError("Product name is required.");
@@ -63,6 +67,10 @@ export class ProductController {
     const id = request.params.id;
     const data = request.body;
 
+    if (!request.user) {
+      throw new UnauthorizedError("You are not logged in");
+    }
+
     if (!Number.isInteger(Number(id))) {
       throw new BadRequestError("Invalid id, must be a number");
     }
@@ -80,6 +88,10 @@ export class ProductController {
     reply: FastifyReply
   ) {
     const id = request.params.id;
+
+    if (!request.user) {
+      throw new UnauthorizedError("You are not logged in");
+    }
 
     if (!Number.isInteger(Number(id))) {
       throw new BadRequestError("Invalid id, must be a number");
