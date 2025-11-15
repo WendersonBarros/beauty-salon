@@ -42,7 +42,7 @@ export class AdminController {
     }
 
     try {
-      const newAcessToken = adminService
+      const newAcessToken = await adminService
         .generateAccessTokenFromRefreshToken(refreshTokenValue);
 
       reply
