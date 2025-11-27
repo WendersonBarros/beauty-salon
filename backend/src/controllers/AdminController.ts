@@ -29,7 +29,10 @@ export class AdminController {
     return reply
       .cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' })
       .header('Authorization', token)
-      .status(200).send("Login successful");
+      .status(200).send({
+        message: "Login successful",
+        acessToken: token
+      });
   }
 
   static async refreshAcessToken(
@@ -47,7 +50,9 @@ export class AdminController {
 
       reply
         .header("Authorization", newAcessToken)
-        .status(200).send("Token refreshed successfully");
+        .status(200).send({
+          accessToken: newAcessToken
+        });
     } catch (error) {
       throw new UnauthorizedError("Invalid refresh token");
     }
